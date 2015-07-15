@@ -61,7 +61,7 @@ func (s *stepCreateAMI) Run(state multistep.StateBag) multistep.StepAction {
 	}
 
 	var ami_type string
-	if "paravirtual" == image.VirtualizationType {
+	if "paravirtual" == *image.VirtualizationType {
 		ami_type = "pv"
 	} else {
 		ami_type = "hvm"
@@ -77,7 +77,7 @@ func (s *stepCreateAMI) Run(state multistep.StateBag) multistep.StepAction {
 	stmt, err := db.Prepare("update bake_ami set ami_status=1, ami_id=? where region=? and ami_type=?")
 	checkErr(err, state, "preparing update query failed")
 
-	res, err := stmt.Exec(createResp.ImageId, ec2conn.Region.Name, ami_type)
+	res, err := stmt.Exec(*createResp.ImageID, ec2conn.Config.Region, ami_type)
 	checkErr(err, state, "update execution failed")
 
 	affect, err := res.RowsAffected()

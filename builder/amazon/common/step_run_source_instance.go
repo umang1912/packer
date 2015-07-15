@@ -268,15 +268,6 @@ func (s *StepRunSourceInstance) Run(state multistep.StateBag) multistep.StepActi
 			fmt.Sprintf("Failed to tag a Name on the builder instance: %s", err))
 	}
 
-  // Tag the EBS volumes of standard type used by amazon-ebs builder
-  instance_filter := ec2.NewFilter()
-  instance_filter.Add("attachment.instance-id", s.instance.InstanceId)
-  instance_filter.Add("volume-type", "standard")
-  vols, err := ec2conn.Volumes(nil, instance_filter)
-  for _, v := range vols.Volumes {
-    _, err = ec2conn.CreateTags([]string{v.VolumeId}, ec2Tags)
-  }
-
 	if s.Debug {
 		if s.instance.PublicDNSName != nil && *s.instance.PublicDNSName != "" {
 			ui.Message(fmt.Sprintf("Public DNS: %s", *s.instance.PublicDNSName))
